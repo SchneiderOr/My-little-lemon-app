@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   Text,
   View,
@@ -6,22 +6,13 @@ import {
   SectionList,
   Alert,
   Image,
-  Pressable,
 } from "react-native";
-import {
-  createTable,
-  getMenuItems,
-  saveMenuItems,
-  filterByQueryAndCategories,
-} from "../database";
+import { filterByQueryAndCategories } from "../database";
 import { Searchbar } from "react-native-paper";
 import Filters from "../components/Filters";
+import Header from "../components/Header";
 import { getSectionListData, useUpdateEffect } from "../utils/utils";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import debounce from "lodash.debounce";
-
-const API_URL =
-  "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json";
 
 const sections = ["starters", "mains", "desserts"];
 
@@ -42,61 +33,12 @@ const Item = ({ name, price, description, image }) => (
 );
 
 const Home = ({ navigation }) => {
-  const [profile, setProfile] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    orderStatuses: false,
-    passwordChanges: false,
-    specialOffers: false,
-    newsletter: false,
-    image: "",
-  });
   const [data, setData] = useState([]);
   const [searchBarText, setSearchBarText] = useState("");
   const [query, setQuery] = useState("");
   const [filterSelections, setFilterSelections] = useState(
     sections.map(() => false)
   );
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch(API_URL);
-      const json = await response.json();
-      const menu = json.menu.map((item, index) => ({
-        id: index + 1,
-        name: item.name,
-        price: item.price.toString(),
-        description: item.description,
-        image: item.image,
-        category: item.category,
-      }));
-      return menu;
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      let menuItems = [];
-      try {
-        await createTable();
-        menuItems = await getMenuItems();
-        if (!menuItems.length) {
-          menuItems = await fetchData();
-          saveMenuItems(menuItems);
-        }
-        const sectionListData = getSectionListData(menuItems);
-        setData(sectionListData);
-        const getProfile = await AsyncStorage.getItem("profile");
-        setProfile(JSON.parse(getProfile));
-      } catch (e) {
-        Alert.alert(e.message);
-      }
-    })();
-  }, []);
 
   useUpdateEffect(() => {
     (async () => {
@@ -138,29 +80,7 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          style={styles.logo}
-          source={require("../assets/Logo.png")}
-          accessible={true}
-          accessibilityLabel={"Little Lemon Logo"}
-        />
-        <Pressable
-          style={styles.avatar}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          {profile.image !== "" ? (
-            <Image source={{ uri: profile.image }} style={styles.avatarImage} />
-          ) : (
-            <View style={styles.avatarEmpty}>
-              <Text style={styles.avatarEmptyText}>
-                {profile.firstName && Array.from(profile.firstName)[0]}
-                {profile.lastName && Array.from(profile.lastName)[0]}
-              </Text>
-            </View>
-          )}
-        </Pressable>
-      </View>
+      <Header setData={setData} navigation={navigation} />
       <View style={styles.heroSection}>
         <Text style={styles.heroHeader}>Little Lemon</Text>
         <View style={styles.heroBody}>
@@ -221,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 18,
+    paddingTop: 48,
   },
   header: {
     padding: 12,

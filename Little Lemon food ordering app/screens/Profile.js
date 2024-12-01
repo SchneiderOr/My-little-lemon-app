@@ -15,8 +15,9 @@ import { AuthContext } from "../contexts/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import Checkbox from "expo-checkbox";
+import Header from "../components/Header";
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -105,14 +106,7 @@ const Profile = () => {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.header}>
-        <Image
-          style={styles.logo}
-          source={require("../assets/Logo.png")}
-          accessible={true}
-          accessibilityLabel={"Little Lemon Logo"}
-        />
-      </View>
+      <Header navigation={navigation} />
       <ScrollView style={styles.viewScroll}>
         <Text style={styles.headertext}>Personal Information</Text>
         <Text style={styles.text}>Avatar</Text>
@@ -243,6 +237,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingTop: 48,
   },
   header: {
     padding: 12,

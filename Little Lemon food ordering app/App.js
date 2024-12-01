@@ -49,7 +49,7 @@ export default function App({ navigation }) {
 
   const authContext = useMemo(
     () => ({
-      onboard: async data => {
+      onboard: async (data) => {
         try {
           const jsonValue = JSON.stringify(data);
           await AsyncStorage.setItem("profile", jsonValue);
@@ -59,7 +59,7 @@ export default function App({ navigation }) {
 
         dispatch({ type: "onboard", isOnboardingCompleted: true });
       },
-      update: async data => {
+      update: async (data) => {
         try {
           const jsonValue = JSON.stringify(data);
           await AsyncStorage.setItem("profile", jsonValue);
@@ -91,15 +91,19 @@ export default function App({ navigation }) {
               <Stack.Screen
                 name="Home"
                 component={Home}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, header: null }}
               />
-              <Stack.Screen name="Profile" component={Profile} />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{ headerShown: false, header: null }}
+              />
             </>
           ) : (
             <Stack.Screen
               name="Onboarding"
               component={Onboarding}
-              options={{ headerShown: false }}
+              options={{ headerShown: false, header: null }}
             />
           )}
         </Stack.Navigator>
